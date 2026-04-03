@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% block title %}Happiness Store 🌸 — Kawaii Gifts & Goodies{% endblock %}
+{% block content %}
+
+<!-- ══ HERO ══ -->
+<section class="hero-gradient py-20 px-4 relative overflow-hidden">
+  <!-- Decorative blobs -->
+  <div class="absolute top-0 right-0 w-96 h-96 opacity-20" style="background: radial-gradient(circle, #FF6B9D, transparent); border-radius: 50%;"></div>
+  <div class="absolute bottom-0 left-0 w-72 h-72 opacity-15" style="background: radial-gradient(circle, #C77DFF, transparent); border-radius: 50%;"></div>
+
+  <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative z-10">
+    <div>
+      <div class="badge badge-pink mb-4">🌸 New Arrivals Just Dropped</div>
+      <h1 class="text-5xl md:text-6xl font-900 text-gray-800 leading-tight mb-6">
+        Your Daily Dose of
+        <span class="gradient-text brand-font block mt-1">Happiness</span>
+      </h1>
+      <p class="text-gray-500 text-lg mb-8 leading-relaxed">Discover adorable kawaii gifts, plushies, stationery & more. Every item crafted to bring a smile to your face! 💕</p>
+      <div class="flex flex-wrap gap-3">
+        <a href="{{ url_for('shop') }}" class="btn-primary text-lg">Shop Now ✨</a>
+        <a href="{{ url_for('surprise') }}" class="btn-secondary text-lg">Surprise Me 🎁</a>
+      </div>
+      <div class="mt-8 flex items-center space-x-6 text-sm text-gray-500">
+        <div class="flex items-center"><i class="fas fa-truck text-pink-400 mr-2"></i> Free Shipping $50+</div>
+        <div class="flex items-center"><i class="fas fa-heart text-pink-400 mr-2"></i> 5000+ Happy Customers</div>
+      </div>
+    </div>
+    <div class="flex justify-center">
+      <div class="relative">
+        <div class="float w-64 h-64 md:w-80 md:h-80 rounded-3xl overflow-hidden shadow-2xl"
+             style="background: linear-gradient(135deg, #FFB3D1, #EDD5FF);">
+          <div class="w-full h-full flex items-center justify-center text-9xl">🌸</div>
+        </div>
+        <!-- Floating emoji badges -->
+        <div class="absolute -top-4 -right-4 w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center text-3xl shadow-lg float" style="animation-delay:0.5s">🧸</div>
+        <div class="absolute -bottom-4 -left-4 w-14 h-14 bg-mint-100 rounded-2xl flex items-center justify-center text-2xl shadow-lg float" style="animation-delay:1s; background:#D4F5D8">✨</div>
+        <div class="absolute top-1/2 -right-8 w-12 h-12 bg-lavender-100 rounded-xl flex items-center justify-center text-2xl shadow-lg float" style="animation-delay:1.5s; background:#EDD5FF">🌈</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CATEGORY STRIP ══ -->
+<section class="py-8 border-b border-pink-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex overflow-x-auto space-x-3 pb-2 scrollbar-hide">
+      {% set cats = [('all','🛍️ All'),('plushies','🧸 Plushies'),('decor','🏠 Decor'),('stationery','📓 Stationery'),('accessories','💍 Accessories'),('home','🛋️ Home'),('plants','🌿 Plants')] %}
+      {% for slug, label in cats %}
+      <a href="{{ url_for('shop', category=slug if slug != 'all' else '') }}"
+         class="flex-none px-5 py-2 rounded-full border-2 border-pink-200 text-sm font-bold text-gray-600 hover:bg-pink-500 hover:text-white hover:border-pink-500 transition-all whitespace-nowrap">
+        {{ label }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ══ FEATURED PRODUCTS ══ -->
+{% if featured %}
+<section class="py-16 px-4 max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-10">
+    <div>
+      <div class="badge badge-pink mb-2">⭐ Hand-picked for you</div>
+      <h2 class="text-3xl font-900 text-gray-800">Featured Products</h2>
+    </div>
+    <a href="{{ url_for('shop') }}" class="btn-secondary text-sm">View All →</a>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for p in featured %}
+    <div class="card group cursor-pointer">
+      <a href="{{ url_for('product', product_id=p.id) }}">
+        <div class="relative h-52 overflow-hidden bg-pink-50">
+          <img src="{{ p.primary_image() }}" alt="{{ p.name }}"
+               class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+               onerror="this.src='/static/images/placeholder.png'">
+          {% if p.is_trending %}
+          <div class="absolute top-2 left-2 badge badge-yellow">🔥 Hot</div>
+          {% endif %}
+          <div class="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-all">
+            <button onclick="quickAdd({{ p.id }}, '{{ p.name }}', event)"
+              class="w-10 h-10 bg-pink-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-pink-600 transition">
+              <i class="fas fa-plus text-sm"></i>
+            </button>
+          </div>
+        </div>
+        <div class="p-4">
+          <h3 class="font-800 text-gray-800 text-sm mb-1 line-clamp-2">{{ p.name }}</h3>
+          <div class="flex items-center justify-between">
+            <span class="text-pink-500 font-900 text-lg">${{ "%.2f"|format(p.price) }}</span>
+            <div class="flex star text-xs">★★★★★</div>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- ══ PROMO BANNER ══ -->
+<section class="py-6 px-4">
+  <div class="max-w-7xl mx-auto rounded-3xl overflow-hidden"
+       style="background: linear-gradient(135deg, #FF6B9D, #C77DFF);">
+    <div class="flex flex-col md:flex-row items-center justify-between px-10 py-8 text-white">
+      <div>
+        <h3 class="text-2xl font-900 mb-1">✨ Bundle & Save!</h3>
+        <p class="opacity-90">Get up to 15% off when you buy our curated bundles</p>
+      </div>
+      <a href="{{ url_for('bundles_page') }}" class="mt-4 md:mt-0 bg-white text-pink-600 font-800 px-8 py-3 rounded-full hover:shadow-xl transition-all">
+        Shop Bundles 🎁
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TRENDING ══ -->
+{% if trending %}
+<section class="py-16 px-4 section-gradient">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex items-center justify-between mb-10">
+      <div>
+        <div class="badge badge-yellow mb-2">🔥 Flying off the shelves</div>
+        <h2 class="text-3xl font-900 text-gray-800">Trending Now</h2>
+      </div>
+      <a href="{{ url_for('shop', sort='newest') }}" class="btn-secondary text-sm">See All →</a>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for p in trending %}
+      <div class="card flex group">
+        <a href="{{ url_for('product', product_id=p.id) }}" class="flex w-full">
+          <div class="w-28 h-28 flex-none overflow-hidden bg-pink-50">
+            <img src="{{ p.primary_image() }}" alt="{{ p.name }}"
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                 onerror="this.src='/static/images/placeholder.png'">
+          </div>
+          <div class="p-4 flex flex-col justify-between flex-1">
+            <div>
+              <span class="text-xs font-700 text-yellow-600 bg-yellow-50 px-2 py-1 rounded-full">🔥 Trending</span>
+              <h3 class="font-800 text-gray-800 text-sm mt-2">{{ p.name }}</h3>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-pink-500 font-900">${{ "%.2f"|format(p.price) }}</span>
+              <form action="{{ url_for('cart_add') }}" method="POST" class="inline">
+                <input type="hidden" name="product_id" value="{{ p.id }}">
+                <input type="hidden" name="quantity" value="1">
+                <button type="submit" class="text-xs bg-pink-500 text-white px-3 py-1 rounded-full hover:bg-pink-600 transition">Add +</button>
+              </form>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══ BUNDLES ══ -->
+{% if bundles %}
+<section class="py-16 px-4">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-10">
+      <div class="badge badge-mint mb-2">🎁 Save more together</div>
+      <h2 class="text-3xl font-900 text-gray-800">Curated Bundles</h2>
+      <p class="text-gray-500 mt-2">Handpicked combinations at special prices</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {% for bundle in bundles %}
+      <div class="card p-6 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 opacity-10" style="background: radial-gradient(circle, #6BCB77, transparent); border-radius: 50%;"></div>
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <div class="badge badge-mint mb-2">🎁 Bundle</div>
+            <h3 class="text-xl font-900 text-gray-800">{{ bundle.name }}</h3>
+            <p class="text-gray-500 text-sm mt-1">{{ bundle.description }}</p>
+          </div>
+          {% if bundle.discount_percent > 0 %}
+          <div class="text-right">
+            <div class="text-2xl font-900 text-green-600">-{{ bundle.discount_percent|int }}%</div>
+            <div class="text-xs text-gray-500">OFF</div>
+          </div>
+          {% endif %}
+        </div>
+        <div class="flex -space-x-2 mb-4">
+          {% for item in bundle.items[:4] %}
+          <img src="{{ item.product.primary_image() }}"
+               class="w-12 h-12 rounded-full border-2 border-white object-cover"
+               onerror="this.src='/static/images/placeholder.png'"
+               title="{{ item.product.name }}">
+          {% endfor %}
+          {% if bundle.items|length > 4 %}
+          <div class="w-12 h-12 rounded-full border-2 border-white bg-pink-100 flex items-center justify-center text-xs font-bold text-pink-500">
+            +{{ bundle.items|length - 4 }}
+          </div>
+          {% endif %}
+        </div>
+        <a href="{{ url_for('bundles_page') }}" class="btn-secondary text-sm">View Bundle →</a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══ ALL PRODUCTS ══ -->
+{% if all_products %}
+<section class="py-16 px-4 section-gradient">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-10">
+      <div class="badge badge-pink mb-2">💕 Explore Everything</div>
+      <h2 class="text-3xl font-900 text-gray-800">Shop All Products</h2>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+      {% for p in all_products %}
+      <div class="card group">
+        <a href="{{ url_for('product', product_id=p.id) }}">
+          <div class="relative h-44 overflow-hidden bg-pink-50">
+            <img src="{{ p.primary_image() }}" alt="{{ p.name }}"
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                 onerror="this.src='/static/images/placeholder.png'">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </div>
+          <div class="p-3">
+            <p class="font-700 text-gray-800 text-xs mb-1 line-clamp-2">{{ p.name }}</p>
+            <span class="text-pink-500 font-900">${{ "%.2f"|format(p.price) }}</span>
+          </div>
+        </a>
+        <div class="px-3 pb-3">
+          <form action="{{ url_for('cart_add') }}" method="POST">
+            <input type="hidden" name="product_id" value="{{ p.id }}">
+            <input type="hidden" name="quantity" value="1">
+            <button type="submit" class="w-full btn-primary py-2 text-xs">Add to Cart 🛍️</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-10">
+      <a href="{{ url_for('shop') }}" class="btn-primary text-lg">View All Products →</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══ TRUST BADGES ══ -->
+<section class="py-12 px-4 border-t border-pink-50">
+  <div class="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+    {% for icon, title, desc in [
+      ('fas fa-shipping-fast','Free Shipping','On orders over $50'),
+      ('fas fa-undo','Easy Returns','30-day return policy'),
+      ('fas fa-shield-alt','Secure Payment','100% protected'),
+      ('fas fa-heart','Made with Love','Every item hand-picked')
+    ] %}
+    <div class="flex flex-col items-center">
+      <div class="w-14 h-14 rounded-2xl bg-pink-50 flex items-center justify-center mb-3">
+        <i class="{{ icon }} text-2xl text-pink-400"></i>
+      </div>
+      <div class="font-800 text-gray-800 text-sm">{{ title }}</div>
+      <div class="text-gray-400 text-xs mt-1">{{ desc }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<script>
+function quickAdd(id, name, e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/cart/add';
+  form.innerHTML = `<input name="product_id" value="${id}"><input name="quantity" value="1">`;
+  document.body.appendChild(form);
+  form.submit();
+}
+</script>
+{% endblock %}

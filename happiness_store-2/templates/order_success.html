@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Order Placed! 🎉 — Happiness Store{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 py-20 text-center">
+  <div class="text-8xl mb-6 float">🎉</div>
+  <h1 class="text-4xl font-900 text-gray-800 mb-3">Order Placed!</h1>
+  <p class="text-gray-500 text-lg mb-8">Thank you <strong>{{ order.customer_name }}</strong>! Your order <strong>#{{ order.id }}</strong> is confirmed.</p>
+  <div class="card p-6 text-left mb-8">
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div><span class="text-gray-400">Order #</span><br><span class="font-800 text-gray-800">{{ order.id }}</span></div>
+      <div><span class="text-gray-400">Status</span><br><span class="font-800 text-green-600">{{ order.status }}</span></div>
+      <div><span class="text-gray-400">Total</span><br><span class="font-800 text-pink-500 text-lg">${{ "%.2f"|format(order.total_price) }}</span></div>
+      <div><span class="text-gray-400">Items</span><br><span class="font-800 text-gray-800">{{ order.items|length }}</span></div>
+    </div>
+  </div>
+  <div class="flex flex-col sm:flex-row gap-4 justify-center">
+    <a href="{{ url_for('home') }}" class="btn-primary text-lg py-4 px-8">Continue Shopping 🌸</a>
+    <a href="{{ url_for('shop') }}" class="btn-secondary text-lg py-4 px-8">Browse More</a>
+  </div>
+</div>
+{% endblock %}
