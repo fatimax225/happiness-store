@@ -1,0 +1,54 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Create Bundle — Admin{% endblock %}
+{% block page_title %}🎁 Create Bundle{% endblock %}
+{% block content %}
+<div class="max-w-2xl">
+  <form method="POST" class="space-y-6">
+
+    <div class="bg-white rounded-3xl shadow-sm p-6 space-y-4">
+      <h2 class="font-900 text-gray-700">Bundle Details</h2>
+      <div>
+        <label class="block text-sm font-800 text-gray-600 mb-1">Bundle Name *</label>
+        <input type="text" name="name" required placeholder="e.g. Happy Home Bundle"
+          class="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:border-pink-400 transition">
+      </div>
+      <div>
+        <label class="block text-sm font-800 text-gray-600 mb-1">Description</label>
+        <textarea name="description" rows="2" placeholder="What's included in this bundle?"
+          class="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:border-pink-400 transition resize-none"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm font-800 text-gray-600 mb-1">Discount % (0 = no discount)</label>
+        <input type="number" name="discount_percent" value="0" min="0" max="90" step="1"
+          class="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:border-pink-400 transition">
+      </div>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-sm p-6">
+      <h2 class="font-900 text-gray-700 mb-4">Select Products</h2>
+      {% if products %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+        {% for p in products %}
+        <label class="flex items-center gap-3 p-3 rounded-2xl border-2 border-gray-50 hover:border-pink-200 cursor-pointer transition">
+          <input type="checkbox" name="product_ids" value="{{ p.id }}" class="accent-pink-500">
+          <img src="{{ p.primary_image() }}" class="w-10 h-10 rounded-xl object-cover"
+               onerror="this.src='/static/images/placeholder.png'">
+          <div class="flex-1 min-w-0">
+            <div class="font-700 text-sm text-gray-800 truncate">{{ p.name }}</div>
+            <div class="text-xs text-pink-500 font-800">${{ "%.2f"|format(p.price) }}</div>
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-gray-400 text-sm">No products available. <a href="{{ url_for('admin_add_product') }}" class="text-pink-500">Add some first →</a></p>
+      {% endif %}
+    </div>
+
+    <div class="flex gap-3">
+      <button type="submit" class="btn-admin px-8 py-3">Create Bundle 🎁</button>
+      <a href="{{ url_for('admin_bundles') }}" class="px-8 py-3 rounded-xl border-2 border-gray-200 font-700 text-gray-600 hover:border-gray-300 transition">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
