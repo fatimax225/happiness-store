@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Bundles 🎁 — Happiness Store{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-10">
+  <div class="text-center mb-12">
+    <div class="badge badge-mint mb-3">🎁 Save More Together</div>
+    <h1 class="text-4xl font-900 text-gray-800">Curated Bundles</h1>
+    <p class="text-gray-500 mt-2">Handpicked combinations at special prices</p>
+  </div>
+
+  {% if bundles %}
+  <div class="space-y-8">
+    {% for bundle in bundles %}
+    <div class="card p-8">
+      <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+        <div>
+          <h2 class="text-2xl font-900 text-gray-800">🎁 {{ bundle.name }}</h2>
+          <p class="text-gray-500 mt-1">{{ bundle.description }}</p>
+        </div>
+        {% if bundle.discount_percent > 0 %}
+        <div class="mt-4 md:mt-0 text-center">
+          <div class="text-4xl font-900 text-green-600">-{{ bundle.discount_percent|int }}%</div>
+          <div class="text-sm text-gray-400 font-600">Bundle Discount</div>
+        </div>
+        {% endif %}
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-6">
+        {% for item in bundle.items %}
+        <a href="{{ url_for('product', product_id=item.product.id) }}" class="text-center group">
+          <div class="h-32 rounded-2xl overflow-hidden bg-pink-50 mb-2">
+            <img src="{{ item.product.primary_image() }}" alt="{{ item.product.name }}"
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                 onerror="this.src='/static/images/placeholder.png'">
+          </div>
+          <div class="text-xs font-700 text-gray-700 line-clamp-2">{{ item.product.name }}</div>
+          <div class="text-pink-500 font-900 text-sm">${{ "%.2f"|format(item.product.price) }}</div>
+        </a>
+        {% endfor %}
+      </div>
+      {% set total = bundle.items|sum(attribute='product.price') %}
+      {% set discounted = total * (1 - bundle.discount_percent/100) %}
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-pink-50">
+        <div class="flex items-center space-x-4">
+          <span class="text-gray-400 line-through">${{ "%.2f"|format(total) }}</span>
+          <span class="text-2xl font-900 gradient-text">${{ "%.2f"|format(discounted) }}</span>
+        </div>
+        <div class="mt-3 sm:mt-0 flex gap-3 flex-wrap">
+          {% for item in bundle.items %}
+          <form action="{{ url_for('cart_add') }}" method="POST" class="inline">
+            <input type="hidden" name="product_id" value="{{ item.product.id }}">
+            <input type="hidden" name="quantity" value="1">
+          </form>
+          {% endfor %}
+          <button onclick="addBundleToCart({{ bundle.items|map(attribute='product.id')|list }})"
+            class="btn-primary">Add Bundle to Cart 🛍️</button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-16">
+    <div class="text-6xl mb-4">🎁</div>
+    <p class="text-gray-400">No bundles available yet. Check back soon!</p>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+async function addBundleToCart(ids) {
+  for (const id of ids) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/cart/add';
+    form.innerHTML = `<input name="product_id" value="${id}"><input name="quantity" value="1">`;
+    document.body.appendChild(form);
+  }
+  // Add first, redirect after
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = '/cart/add';
+  form.innerHTML = `<input name="product_id" value="${ids[0]}"><input name="quantity" value="${ids.length}">`;
+  document.body.appendChild(form);
+  form.submit();
+}
+</script>
+{% endblock %}

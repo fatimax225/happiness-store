@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — Happiness Store</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, #FFF0F7 0%, #FFF4CC 50%, #EDD5FF 100%); min-height: 100vh; }
+    .brand-font { font-family: 'Pacifico', cursive; }
+    .gradient-text { background: linear-gradient(135deg, #FF6B9D, #C77DFF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen px-4">
+  <div class="w-full max-w-md">
+    <div class="text-center mb-8">
+      <div class="brand-font text-4xl gradient-text mb-2">🌸 Happiness</div>
+      <p class="text-gray-500">Admin Panel Login</p>
+    </div>
+    <div class="bg-white rounded-3xl shadow-xl p-8">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+        <div class="mb-4 px-4 py-3 rounded-xl text-sm font-600
+          {% if cat=='success' %}bg-green-50 text-green-700{% else %}bg-red-50 text-red-600{% endif %}">
+          {{ msg }}
+        </div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="POST" class="space-y-5">
+        <div>
+          <label class="block text-sm font-800 text-gray-600 mb-2">Username</label>
+          <input type="text" name="username" required autocomplete="username"
+            class="w-full border-2 border-pink-100 rounded-2xl px-4 py-3 focus:border-pink-400 focus:outline-none transition"
+            placeholder="admin">
+        </div>
+        <div>
+          <label class="block text-sm font-800 text-gray-600 mb-2">Password</label>
+          <input type="password" name="password" required autocomplete="current-password"
+            class="w-full border-2 border-pink-100 rounded-2xl px-4 py-3 focus:border-pink-400 focus:outline-none transition"
+            placeholder="••••••••">
+        </div>
+        <button type="submit"
+          class="w-full py-3 rounded-2xl font-800 text-white text-lg transition-all"
+          style="background: linear-gradient(135deg, #FF6B9D, #C77DFF); box-shadow: 0 4px 15px rgba(255,107,157,0.4);">
+          Login ✨
+        </button>
+      </form>
+      <div class="mt-6 text-center">
+        <a href="/" class="text-sm text-gray-400 hover:text-pink-500 transition">← Back to Store</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

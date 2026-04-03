@@ -1,0 +1,92 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Dashboard — Admin{% endblock %}
+{% block page_title %}📊 Dashboard{% endblock %}
+{% block content %}
+
+<!-- Stats -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  {% for icon, label, value, color, bg in [
+    ('fas fa-box','Total Products', total_products, '#FF6B9D','#FFF0F7'),
+    ('fas fa-shopping-bag','Total Orders', total_orders, '#C77DFF','#EDD5FF'),
+    ('fas fa-clock','Pending Orders', pending_orders, '#FFD93D','#FFF4CC'),
+    ('fas fa-dollar-sign','Revenue', '$'~total_revenue, '#6BCB77','#D4F5D8')
+  ] %}
+  <div class="stat-card">
+    <div class="flex items-center justify-between mb-4">
+      <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background:{{ bg }}">
+        <i class="{{ icon }}" style="color:{{ color }}; font-size:20px;"></i>
+      </div>
+      <span class="text-2xl font-900 text-gray-800">{{ value }}</span>
+    </div>
+    <div class="text-sm font-700 text-gray-500">{{ label }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Quick Actions -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <a href="{{ url_for('admin_add_product') }}" class="stat-card flex items-center gap-4 hover:shadow-lg transition group">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl" style="background:#FFF0F7">➕</div>
+    <div>
+      <div class="font-800 text-gray-800 group-hover:text-pink-500 transition">Add Product</div>
+      <div class="text-sm text-gray-400">Create new item</div>
+    </div>
+  </a>
+  <a href="{{ url_for('admin_orders') }}" class="stat-card flex items-center gap-4 hover:shadow-lg transition group">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl" style="background:#EDD5FF">📦</div>
+    <div>
+      <div class="font-800 text-gray-800 group-hover:text-purple-500 transition">Manage Orders</div>
+      <div class="text-sm text-gray-400">{{ pending_orders }} pending</div>
+    </div>
+  </a>
+  <a href="{{ url_for('admin_add_bundle') }}" class="stat-card flex items-center gap-4 hover:shadow-lg transition group">
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl" style="background:#D4F5D8">🎁</div>
+    <div>
+      <div class="font-800 text-gray-800 group-hover:text-green-600 transition">New Bundle</div>
+      <div class="text-sm text-gray-400">Group products</div>
+    </div>
+  </a>
+</div>
+
+<!-- Recent Orders -->
+<div class="bg-white rounded-3xl shadow-sm overflow-hidden">
+  <div class="px-6 py-5 border-b border-gray-50 flex items-center justify-between">
+    <h2 class="text-lg font-900 text-gray-800">Recent Orders</h2>
+    <a href="{{ url_for('admin_orders') }}" class="text-sm text-pink-500 font-700 hover:text-pink-700 transition">View All →</a>
+  </div>
+  {% if recent_orders %}
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-800 text-gray-500">#</th>
+          <th class="px-6 py-3 text-left text-xs font-800 text-gray-500">Customer</th>
+          <th class="px-6 py-3 text-left text-xs font-800 text-gray-500">Total</th>
+          <th class="px-6 py-3 text-left text-xs font-800 text-gray-500">Status</th>
+          <th class="px-6 py-3 text-left text-xs font-800 text-gray-500">Date</th>
+          <th class="px-6 py-3 text-left text-xs font-800 text-gray-500">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        {% for order in recent_orders %}
+        <tr class="hover:bg-pink-50/30 transition">
+          <td class="px-6 py-4 text-sm font-700 text-gray-600">#{{ order.id }}</td>
+          <td class="px-6 py-4 text-sm font-600 text-gray-800">{{ order.customer_name }}</td>
+          <td class="px-6 py-4 text-sm font-800 text-pink-500">${{ "%.2f"|format(order.total_price) }}</td>
+          <td class="px-6 py-4">
+            <span class="badge badge-{{ order.status.lower() }}">{{ order.status }}</span>
+          </td>
+          <td class="px-6 py-4 text-xs text-gray-400">{{ order.created_at.strftime('%b %d, %Y') }}</td>
+          <td class="px-6 py-4">
+            <a href="{{ url_for('admin_order_detail', order_id=order.id) }}" class="text-xs text-pink-500 font-700 hover:text-pink-700">View →</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="py-12 text-center text-gray-400">No orders yet 📭</div>
+  {% endif %}
+</div>
+{% endblock %}
