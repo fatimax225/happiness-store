@@ -808,9 +808,5 @@ def show_products():
 #  Entry Point
 # ══════════════════════════════════════════════════════════════════════
 if __name__ == '__main__':
-    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-    with app.app_context():
-        db.create_all()
-        seed_products()
     app.run(host="0.0.0.0", port=10000)
  
